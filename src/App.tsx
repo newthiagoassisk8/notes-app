@@ -1,25 +1,41 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 
-import { Trash } from 'lucide-react'
+import { Trash } from 'lucide-react';
 
-import { dataNotes, type DataNote } from '@/modules/note/data'
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { dataNotes, type DataNote } from '@/modules/note/data';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+
+async function getData() {
+  const url = 'http://192.168.0.27:3000/api/notes';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Response status: ${res.status}`);
+    }
+    const result = await res.json();
+    localStorage.setItem('notes', JSON.stringify(result.data));
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export function App() {
   const [notes, setNotes] = useState(() => {
-    const storedNotes = localStorage.getItem('notes')
-    return storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : dataNotes
-  })
+    const storedNotes = localStorage.getItem('notes');
+    return storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : dataNotes;
+  });
 
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes))
-  }, [notes])
+    // localStorage.setItem('notes', JSON.stringify(notes));
+    getData();
+  });
 
   const removeNote = (id: number) => {
-    const updatedNotes = notes.filter((note) => note.id !== id)
-    setNotes(updatedNotes)
-  }
+    const updatedNotes = notes.filter((note) => note.id !== id);
+    setNotes(updatedNotes);
+  };
 
   return (
     <div className="flex justify-center">
@@ -33,39 +49,32 @@ export function App() {
                 <li key={note.id}>
                   <Notes
                     id={note.id}
-                    name={note.name}
-                    description={note.description ?? ''}
+                    name={note.title}
+                    description={note.content ?? ''}
                     isDone={note.isDone}
                     onRemove={removeNote}
                     createdDate={note.createdDate}
                   />
                 </li>
-              )
+              );
             })}
           </ul>
         </section>
       </div>
     </div>
-  )
+  );
 }
 
 interface NotesProps {
-  id: number
-  name: string
-  description: string
-  isDone: boolean
-  onRemove: (id: number) => void
-  createdDate?: string | Date
+  id: number;
+  name: string;
+  description: string;
+  isDone: boolean;
+  onRemove: (id: number) => void;
+  createdDate?: string | Date;
 }
 
-export function Notes({
-  id,
-  name,
-  description,
-  isDone,
-  onRemove,
-  createdDate,
-}: NotesProps) {
+export function Notes({ id, name, description, isDone, onRemove, createdDate }: NotesProps) {
   return (
     <div className="flex justify-between rounded-lg border-2 bg-gray-200 p-4">
       <div>
@@ -90,14 +99,10 @@ export function Notes({
         <Button asChild variant="outline" size="sm">
           <Link to={`/notes/${id}`}>View</Link>
         </Button>
-        <Button
-          variant="destructive"
-          size="icon-sm"
-          onClick={() => onRemove(id)}
-        >
+        <Button variant="destructive" size="icon-sm" onClick={() => onRemove(id)}>
           <Trash />
         </Button>
       </div>
     </div>
-  )
+  );
 }

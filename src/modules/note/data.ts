@@ -1,31 +1,31 @@
 export type DataNote = {
   id: number
-  name: string
+  title: string
   isDone: boolean
-  description?: string
+  content?: string
   createdDate?: string | Date
 }
 
 export const dataNotes: DataNote[] = [
   {
     id: 1,
-    name: 'Month 01: Introduction',
+    title: 'Month 01: Introduction',
     isDone: true,
-    description: 'Frontend HTML & CSS',
+    content: 'Frontend HTML & CSS',
     createdDate: new Date(),
   },
   {
     id: 2,
-    name: 'Month 02: UI/UX Design',
+    title: 'Month 02: UI/UX Design',
     isDone: true,
-    description: 'Frontend JavaScript',
+    content: 'Frontend JavaScript',
     createdDate: new Date(),
   },
   {
     id: 3,
-    name: 'Month 03: Code Editor',
+    title: 'Month 03: Code Editor',
     isDone: true,
-    description: 'Frontend React',
+    content: 'Frontend React',
     createdDate: new Date(),
   },
 ]
