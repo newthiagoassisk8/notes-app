@@ -1,31 +1,34 @@
-import type { DataNote } from '@/modules/note/data'
-import { useParams } from 'react-router'
+import type { DataNote } from '@/modules/note/data';
+import { useParams } from 'react-router';
 
 export function NoteId() {
-  let params = useParams()
+    const params = useParams();
 
-  console.log(params)
+    console.log(params);
 
-  const id = Number(params.id)
+    const id = params.id;
+    console.log('id');
+    console.log(id);
 
-  const storedNotes = localStorage.getItem('notes')
-  const notes = storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : []
+    const storedNotes = localStorage.getItem('notes');
+    const notes = storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : [];
 
-  const note = notes.find((note) => note.id === id)
-  console.log(note)
+    const note = notes.find((note) => note.id === id);
 
-  if (!note) {
+    console.log(notes.find((note) => note.id === id));
+
+    if (!note) {
+        return (
+            <div>
+                <p>Sorry, we couldn't find the note you're looking for.</p>
+            </div>
+        );
+    }
+
     return (
-      <div>
-        <p>Sorry, we couldn't find the note you're looking for.</p>
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <h1> {note.name}</h1>
-      <p> {note.description}</p>
-    </div>
-  )
+        <div>
+            <h1> {note.title}</h1>
+            <p> {note.content}</p>
+        </div>
+    );
 }
