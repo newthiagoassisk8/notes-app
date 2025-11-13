@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import type { DataNote } from '@/modules/note/data';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
+import { useState } from 'react';
 
 async function asdf(mockData: DataNote) {
     const url = 'http://192.168.0.27:3000/api/notes/new';
@@ -31,32 +32,38 @@ export function NewNote() {
     const navigate = useNavigate();
 
     const storedNotes = localStorage.getItem('notes');
+    const [isLoading, setIsLoading] = useState(false);
     const notes = storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : [];
 
     const handleAddNote = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        try {
+            event.preventDefault();
+            setIsLoading(true);
+            const formData = new FormData(event.currentTarget);
+            const title = formData.get('title')?.toString();
+            const content = formData.get('content')?.toString();
+            if (!title) return;
+            if (!content) return;
 
-        const formData = new FormData(event.currentTarget);
-        const title = formData.get('title')?.toString();
-        console.log(title);
-        const content = formData.get('content')?.toString();
-        if (!title) return;
-        if (!content) return;
+            const newNote: DataNote = {
+                id: notes[notes.length - 1]?.id + 1 || '1',
+                title,
+                content,
+                isDone: false,
+                createdDate: new Date(),
+            };
+            await asdf(newNote);
 
-        const newNote: DataNote = {
-            id: notes[notes.length - 1]?.id + 1 || '1',
-            title,
-            content,
-            isDone: false,
-            createdDate: new Date(),
-        };
-        await asdf(newNote);
+            const updatedNotes = [...notes, newNote];
 
-        const updatedNotes = [...notes, newNote];
+            localStorage.setItem('notes', JSON.stringify(updatedNotes));
 
-        localStorage.setItem('notes', JSON.stringify(updatedNotes));
-
-        navigate(`/notes/${newNote.id}`);
+            navigate(`/notes/${newNote.id}`);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -83,9 +90,14 @@ export function NewNote() {
                                     required
                                 />
                             </div>
-                            <Button type="submit" className="self-end">
-                                Add Note
-                            </Button>
+
+                            {isLoading ? (
+                                'Carregando'
+                            ) : (
+                                <Button type="submit" className="self-end">
+                                    Add Note
+                                </Button>
+                            )}
                         </form>
                     </CardContent>
                 </Card>
