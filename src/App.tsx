@@ -26,7 +26,7 @@ export function App() {
         const storedNotes = localStorage.getItem('notes');
         return storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : dataNotes;
     });
-    console.log(notes)
+    console.log(notes);
 
     useEffect(() => {
         localStorage.setItem('notes', JSON.stringify(notes));
@@ -45,20 +45,24 @@ export function App() {
 
                 <section>
                     <ul className="space-y-2">
-                        {notes.map((note) => {
-                            return (
-                                <li key={note.id}>
-                                    <Notes
-                                        id={note.id}
-                                        name={note.title}
-                                        description={note.content ?? ''}
-                                        isDone={note.isDone}
-                                        onRemove={removeNote}
-                                        createdDate={note.createdDate}
-                                    />
-                                </li>
-                            );
-                        })}
+                        {notes.length === 0 ? (
+                            <p>Sem notas</p>
+                        ):(
+                            notes.map((note) => {
+                                return (
+                                    <li key={note.id}>
+                                        <Notes
+                                            id={note.id}
+                                            name={note.title}
+                                            description={note.content ?? ''}
+                                            isDone={note.isDone}
+                                            onRemove={removeNote}
+                                            createdDate={note.createdDate}
+                                        />
+                                    </li>
+                                );
+                            })
+                        )}
                     </ul>
                 </section>
             </div>
@@ -75,25 +79,17 @@ interface NotesProps {
     createdDate?: string | Date;
 }
 
-export function Notes({ id, name, description, isDone, onRemove, createdDate }: NotesProps) {
+export function Notes({ id, name, description,  onRemove }: NotesProps) {
     return (
         <div className="flex justify-between rounded-lg border-2 bg-gray-200 p-4">
             <div>
                 <h2 className="text-xl font-semibold">
-                    {name} {isDone && <span>✅</span>}
+                    {name}
                 </h2>
 
                 <p>{description}</p>
-                {createdDate && (
-                    <p className="text-xs text-gray-500">
-                        {new Date(createdDate).toLocaleDateString('en-US', {
-                            day: 'numeric',
-                            weekday: 'short',
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </p>
-                )}
+
+
             </div>
 
             <div className="flex gap-2">
