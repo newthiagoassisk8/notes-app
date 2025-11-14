@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import SimplePagination from '@/components/shared/custom-pagination'
 
 async function getNotes() {
-    const url = 'http://100.99.181.118:3000/api/notes';
+    const url = 'http://192.168.0.27:3000/api/notes';
     // todo: Fazer try catch() certinho
     // TODO: Definir um  qtd de itens por pagina e incrementador
     try {
