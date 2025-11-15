@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 
+// TODO Usar react hook form + zod para validação
 async function asdf(mockData: DataNote) {
     const url = 'http://192.168.0.27:3000/api/notes/new';
     try {

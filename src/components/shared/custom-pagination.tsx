@@ -1,5 +1,4 @@
 // SimplePagination.tsx
-import React from "react";
 
 type Props = {
   currentPage: number;
@@ -24,7 +23,8 @@ export default function SimplePagination({
       >
         ←
       </button>
-
+      {/* TODO: ajustar paginação para só
+       aparecer a pagina seguinte conforme o limte */}
       <span className="text-sm text-neutral-700 dark:text-neutral-300">
         Página <span className="font-medium">{currentPage}</span> de{" "}
         <span className="font-medium">{totalPages}</span>

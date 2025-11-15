@@ -1,28 +1,13 @@
-import type { DataNote } from '@/modules/note/data';
-import { useParams } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 export function NoteId() {
-    const params = useParams();
-
-    const id = params.id;
-
-    const storedNotes = localStorage.getItem('notes');
-    const notes = storedNotes ? (JSON.parse(storedNotes) as DataNote[]) : [];
-
-    const note = notes.find((note) => note.id === id);
-
-    if (!note) {
-        return (
-            <div>
-                <p>Sorry, we couldn't find the note you're looking for.</p>
-            </div>
-        );
-    }
+    const location = useLocation();
 
     return (
         <div>
-            <h1> {note.title}</h1>
-            <p> {note.content}</p>
+            <div className="w-full h-screen flex items-center justify-center bg-white">
+                <p className="overflow-hidden ">{JSON.stringify(location.state)}</p>
+            </div>
         </div>
     );
 }

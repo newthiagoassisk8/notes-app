@@ -5,14 +5,14 @@ import { Trash } from 'lucide-react';
 import { type DataNote } from '@/modules/note/data';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import SimplePagination from '@/components/shared/custom-pagination'
+import SimplePagination from '@/components/shared/custom-pagination';
 
-async function getNotes() {
+// TODO aplicar filtro com paginação no scroll
+async function getNotes(items = 3, page = 1) {
     const url = 'http://192.168.0.27:3000/api/notes';
-    // todo: Fazer try catch() certinho
-    // TODO: Definir um  qtd de itens por pagina e incrementador
+
     try {
-        const res = await fetch(url);
+        const res = await fetch(`${url}?limit=${items}&page=${page}`);
 
         if (!res.ok) {
             throw new Error(`Response status: ${res.status}`);
@@ -25,37 +25,58 @@ async function getNotes() {
     }
 }
 
-export function App() {
+async function deleteNote(id: string) {
+    try {
+        const res = await fetch(`http://192.168.0.27:3000/api/notes/${id}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) {
+            throw new Error(`Erro ao deletar: ${res.status}`);
+        }
+        return;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
+export function App() {
     const [notes, setNotes] = useState<DataNote[]>([]);
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const total = 10;
 
+    const total = 10;
 
     useEffect(() => {
         async function fetchNotes() {
             try {
                 setIsLoading(true);
 
-                const data = await getNotes();
+                const data = await getNotes(10, page);
 
                 setNotes(data);
-                setError('')
+                setError('');
             } catch (error) {
-                setError((error as Error)?.message)
+                setError((error as Error)?.message);
                 console.log(error);
             } finally {
                 setIsLoading(false);
             }
         }
         fetchNotes();
-    }, []);
+    }, [page]);
 
-    const removeNote = (id: string) => {
-        const updatedNotes = notes.filter((note) => note.id !== id);
-        setNotes(updatedNotes);
+    const removeNote = async (id: string) => {
+        try {
+            setIsLoading(true);
+            const updatedNotes = notes.filter((note) => note.id !== id);
+            await deleteNote(id);
+            setNotes(updatedNotes);
+        } catch (error) {
+            setError((error as Error)?.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -63,11 +84,7 @@ export function App() {
             <div className="w-full max-w-xl space-y-10 bg-white p-10">
                 <h1 className="text-3xl font-bold">Notes App</h1>
                 <h6 className="text-lg my-5 text-orange-500 font-bold">{error}</h6>
-                 <SimplePagination
-        currentPage={page}
-        totalPages={total}
-        onPageChange={setPage}
-      />
+                <SimplePagination currentPage={page} totalPages={total} onPageChange={setPage} />
 
                 <section>
                     <ul className="space-y-2">
@@ -82,6 +99,7 @@ export function App() {
                                         <Notes
                                             id={note.id}
                                             name={note.title}
+                                            notes={note}
                                             description={note.content ?? ''}
                                             isDone={note.isDone}
                                             onRemove={removeNote}
@@ -105,9 +123,10 @@ interface NotesProps {
     isDone: boolean;
     onRemove: (id: string) => void;
     createdDate?: string | Date;
+    notes: DataNote;
 }
 
-export function Notes({ id, name, description, onRemove }: NotesProps) {
+export function Notes({ id, name, description, onRemove, notes }: NotesProps) {
     return (
         <div className="flex justify-between rounded-lg border-2 bg-gray-200 p-4">
             <div>
@@ -118,7 +137,9 @@ export function Notes({ id, name, description, onRemove }: NotesProps) {
 
             <div className="flex gap-2">
                 <Button asChild variant="outline" size="sm">
-                    <Link to={`/notes/${id}`}>View</Link>
+                    <Link to={`/notes/${id}`} state={notes}>
+                        View
+                    </Link>
                 </Button>
                 <Button variant="destructive" size="icon-sm" onClick={() => onRemove(id)}>
                     <Trash />
