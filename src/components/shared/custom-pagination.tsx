@@ -2,7 +2,7 @@
 
 type Props = {
   currentPage: number;
-  totalPages: number;
+  totalPages: number | null;
   onPageChange: (page: number) => void;
 };
 
@@ -11,6 +11,9 @@ export default function SimplePagination({
   totalPages,
   onPageChange,
 }: Props) {
+  if (!totalPages) {
+    return <></>
+  }
   const prevPage = () => onPageChange(Math.max(1, currentPage - 1));
   const nextPage = () => onPageChange(Math.min(totalPages, currentPage + 1));
 

@@ -6,7 +6,8 @@ import { type DataNote } from '@/modules/note/data';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import SimplePagination from '@/components/shared/custom-pagination';
-
+import { FilterList } from './components/shared/filter';
+//  TODO:  Em uma aplicação React com react-router-dom, a tela principal deve carregar seus dados apenas uma vez. Quando o usuário sai dessa tela e depois retorna por outro fluxo de navegação, o estado/dados da tela devem continuar os mesmos, sem novo carregamento nem perda de alterações locais.
 // TODO aplicar filtro com paginação no scroll
 async function getNotes(items = 3, page = 1) {
     const url = 'http://192.168.0.27:3000/api/notes';
@@ -19,7 +20,7 @@ async function getNotes(items = 3, page = 1) {
         }
         const result = await res.json();
 
-        return result.data;
+        return result || {};
     } catch (error) {
         console.error(error);
     }
@@ -38,21 +39,24 @@ async function deleteNote(id: string) {
         console.log(error);
     }
 }
-
+type Item = { id: number; name: string };
 export function App() {
     const [notes, setNotes] = useState<DataNote[]>([]);
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
+    const [totalPages, setTotalPages] = useState(null);
     const [page, setPage] = useState(1);
-
-    const total = 10;
 
     useEffect(() => {
         async function fetchNotes() {
             try {
                 setIsLoading(true);
 
-                const data = await getNotes(10, page);
+                const result = await getNotes(10, page);
+                const data = result?.data || [];
+                let { totalPages } = result?.meta || {};
+                totalPages = !isNaN(Number(totalPages)) ? Number(totalPages) : null;
+                setTotalPages(totalPages);
 
                 setNotes(data);
                 setError('');
@@ -84,7 +88,17 @@ export function App() {
             <div className="w-full max-w-xl space-y-10 bg-white p-10">
                 <h1 className="text-3xl font-bold">Notes App</h1>
                 <h6 className="text-lg my-5 text-orange-500 font-bold">{error}</h6>
-                <SimplePagination currentPage={page} totalPages={total} onPageChange={setPage} />
+
+                <SimplePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                {/* <FilterList<Item>
+                    items={items}
+                    hasMore={hasMore}
+                    loading={loading}
+                    query={query}
+                    onQueryChange={setQuery}
+                    onLoadMore={load}
+                    renderItem={(item) => <div>{item.name}</div>}
+                /> */}
 
                 <section>
                     <ul className="space-y-2">
