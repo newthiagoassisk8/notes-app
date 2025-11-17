@@ -7,48 +7,11 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import SimplePagination from '@/components/shared/custom-pagination';
 import { BadgeList } from '@/components/shared/badge-list';
+import { deleteNote, getNotes } from './integrations/api';
 
 //  TODO:  Em uma aplicação React com react-router-dom, a tela principal deve carregar seus dados apenas uma vez. Quando o usuário sai dessa tela e depois retorna por outro fluxo de navegação, o estado/dados da tela devem continuar os mesmos, sem novo carregamento nem perda de alterações locais.
 // TODO aplicar filtro com paginação no scroll
 
-
-async function getNotes(items = 3, page = 1, tag?: string) {
-    const baseUrl = 'http://192.168.0.27:3000/api/notes';
-    const params = new URLSearchParams({
-        limit: items.toString(),
-        page: page.toString(),
-    });
-
-    if (tag) params.append('tag', tag); // só adiciona se existir
-
-    try {
-        const res = await fetch(`${baseUrl}?${params.toString()}`);
-
-        if (!res.ok) {
-            throw new Error(`Response status: ${res.status}`);
-        }
-
-        const result = await res.json();
-        return result || {};
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-
-async function deleteNote(id: string) {
-    try {
-        const res = await fetch(`http://192.168.0.27:3000/api/notes/${id}`, {
-            method: 'DELETE',
-        });
-        if (!res.ok) {
-            throw new Error(`Erro ao deletar: ${res.status}`);
-        }
-        return;
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 export function App() {
     const [notes, setNotes] = useState<DataNote[]>([]);
