@@ -5,7 +5,7 @@ type Props = {
   totalPages: number | null;
   onPageChange: (page: number) => void;
 };
-
+// TODO: AJEITAR NEGÓCIO DO +1
 export default function SimplePagination({
   currentPage,
   totalPages,
