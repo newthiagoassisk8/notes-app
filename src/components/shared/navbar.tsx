@@ -3,8 +3,8 @@ import { Button } from '../ui/button'
 
 export function Navbar() {
   return (
-    <div className='top-0 w-full fixed'>
-      <nav className=" bg-primary text-primary-foreground mb-8 flex items-center justify-between gap-10 px-8 py-4 shadow-md">
+    <div className="fixed top-0 w-full">
+      <nav className="bg-primary text-primary-foreground mb-8 flex items-center justify-between gap-10 px-8 py-4 shadow-md">
         <Link to="/">
           <h1 className="text-2xl font-bold tracking-tight">Notes App</h1>
         </Link>
@@ -16,8 +16,6 @@ export function Navbar() {
           <li>
             <Link to="/about">About</Link>
           </li>
-
-
         </ul>
 
         <div>

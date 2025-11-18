@@ -6,6 +6,4 @@ export type DataNote = {
   createdDate?: string | Date
 }
 
-export const dataNotes: DataNote[] = [
-
-]
+export const dataNotes: DataNote[] = []
