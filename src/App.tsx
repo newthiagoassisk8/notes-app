@@ -12,7 +12,6 @@ import { deleteNote, getNotes } from './integrations/api'
 //  TODO:  Em uma aplicação React com react-router-dom, a tela principal deve carregar seus dados apenas uma vez. Quando o usuário sai dessa tela e depois retorna por outro fluxo de navegação, o estado/dados da tela devem continuar os mesmos, sem novo carregamento nem perda de alterações locais.
 // TODO aplicar filtro com paginação no scroll
 
-
 type TagItem = {
   tags: string[]
 }
@@ -21,13 +20,11 @@ export function App() {
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(null)
-  const [tag, setTag] = useState('')
   const [page, setPage] = useState(1)
 
   const [totalTags, setTotalTags] = useState<TagItem[]>([])
 
-
-
+  // TODO Estudar o porque isso funcionou
   useEffect(() => {
     async function fetchNotes() {
       try {
@@ -59,7 +56,6 @@ export function App() {
   const uniqueTags = useMemo(() => {
     if (!totalTags) return []
     const allTags = totalTags.flatMap((item) => item.tags ?? [])
-    console.log(allTags)
     return Array.from(new Set(allTags))
   }, [totalTags])
 
@@ -80,7 +76,6 @@ export function App() {
     try {
       setIsLoading(true)
 
-      setTag(tagValor)
       const result = await getNotes(10, page, tagValor)
       const data = result?.data || []
       let { totalPages } = result?.meta || {}
