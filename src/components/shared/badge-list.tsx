@@ -35,7 +35,8 @@ export const BadgeList: React.FC<BadgeListProps> = ({
   const uniqueTags = Array.from(new Set(tags))
   const items = uniqueTags.slice(0, limit)
 
-  const extraTagsCount =  uniqueTags.length > limit ? uniqueTags.length - limit : false
+  const extraTagsCount =
+    uniqueTags.length > limit ? uniqueTags.length - limit : false
 
   return (
     <div
@@ -50,8 +51,6 @@ export const BadgeList: React.FC<BadgeListProps> = ({
           {tag}
         </Badge>
       ))}
-
-      {/* todo: Colocar a operação que verifica se o botão de ver mais */}
 
       {extraTagsCount && (
         <Badge
