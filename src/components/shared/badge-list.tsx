@@ -34,7 +34,7 @@ export const BadgeList: React.FC<BadgeListProps> = ({
 
   const uniqueTags = Array.from(new Set(tags))
   const items = uniqueTags.slice(0, limit)
-
+  // Se o número de tags ultrapassar o limite, calcula o excedente. Caso contrário, retorna false.
   const extraTagsCount =
     uniqueTags.length > limit ? uniqueTags.length - limit : false
 
