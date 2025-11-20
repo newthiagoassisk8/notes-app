@@ -1,5 +1,5 @@
 import { useState } from 'react'
-
+// TODO resolver o clique do botão para ficar selecionado a oção
 type BadgeProps = {
   children: React.ReactNode
   onClick?: () => void
@@ -28,20 +28,14 @@ export const BadgeList: React.FC<BadgeListProps> = ({
   onTagClick,
   className,
 }) => {
-  const [limite, setLimite] = useState(5)
+  const [limit, setlimit] = useState(5)
 
   if (!tags) return null
 
   const uniqueTags = Array.from(new Set(tags))
-  console.log('uniqueTags')
-  console.log(uniqueTags)
-  const unique = Array.from(new Set(Object.values(tags))).filter(Boolean)
-  const items = typeof limite === 'number' ? unique.slice(0, limite) : unique
+  const items = uniqueTags.slice(0, limit)
 
-  const hiddenCount =
-    typeof limite === 'number' && unique.length > limite
-      ? unique.length - limite
-      : 0
+  const extraTagsCount =  uniqueTags.length > limit ? uniqueTags.length - limit : false
 
   return (
     <div
@@ -57,10 +51,12 @@ export const BadgeList: React.FC<BadgeListProps> = ({
         </Badge>
       ))}
 
-      {hiddenCount > 0 && (
+      {/* todo: Colocar a operação que verifica se o botão de ver mais */}
+
+      {extraTagsCount && (
         <Badge
-          title={`+${hiddenCount} tags`}
-          onClick={() => setLimite(Number(Object.values(tags).length))}
+          title={`+${extraTagsCount} tags`}
+          onClick={() => setlimit(Number(Object.values(tags).length))}
         >
           Ver mais
         </Badge>
