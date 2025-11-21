@@ -17,43 +17,7 @@ type TagItem = {
     tags: string[];
 };
 export function App() {
-    const [notes, setNotes] = useState<DataNote[]>([
-        {
-            id: '1',
-            title: 'Estudar TypeScript',
-            isDone: false,
-            content: 'Revisar tipos genéricos e inferência de tipos no TypeScript.',
-            createdDate: '2025-11-18T10:30:00Z',
-        },
-        {
-            id: '2',
-            title: 'Implementar filtro de tags',
-            isDone: true,
-            content: 'Usar Set() para garantir unicidade das tags antes de renderizar o filtro.',
-            createdDate: '2025-11-17T09:15:00Z',
-        },
-        {
-            id: '3',
-            title: 'Atualizar documentação da API',
-            isDone: false,
-            content: 'Descrever endpoints de listagem e criação de notas.',
-            createdDate: '2025-11-16T14:40:00Z',
-        },
-        {
-            id: '4',
-            title: 'Criar componente BadgeList',
-            isDone: true,
-            content: 'Renderizar tags com Tailwind e map de elementos React.',
-            createdDate: '2025-11-15T11:00:00Z',
-        },
-        {
-            id: '5',
-            title: 'Refatorar função de upload',
-            isDone: false,
-            content: 'Adicionar validação para limitar a 500 fotos e exibir loader.',
-            createdDate: '2025-11-14T08:45:00Z',
-        },
-    ]);
+    const [notes, setNotes] = useState<DataNote[]>([]);
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(null);
@@ -83,7 +47,7 @@ export function App() {
 
                 setTotalPages(totalPages);
 
-                // setNotes(data)
+                setNotes(data);
                 setError('');
             } catch (error) {
                 setError((error as Error)?.message);
