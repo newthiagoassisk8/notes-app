@@ -22,12 +22,13 @@ export function App() {
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(null);
     const [page, setPage] = useState(1);
-
+    const [search, setSearch] = useState<string>('');
     const [totalTags, setTotalTags] = useState<TagItem[]>([]);
-
-    // function filter(dataNote){
-
-    // }
+    const filtered = notes.filter(
+        (note) =>
+            note?.title.toLowerCase().includes(search.toLowerCase()) ||
+            note?.content?.toLowerCase().includes(search.toLowerCase())
+    );
 
     // TODO Estudar o porque isso funcionou
     useEffect(() => {
@@ -105,12 +106,12 @@ export function App() {
                 <SimplePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
                 <Input
                     type="text"
-                    placeholder="Digite algo..."
-                    onChange={(e) => {
-                        console.log(e.target.value);
-                    }}
+                    placeholder="Buscar a nota..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
                 <BadgeList tags={uniqueTags} onTagClick={(tag) => applyFilter(tag)}></BadgeList>
+                <p>{search}</p>
 
                 <section>
                     <ul className="space-y-2">
@@ -119,7 +120,7 @@ export function App() {
                         ) : notes.length === 0 ? (
                             <p>Sem notas</p>
                         ) : (
-                            notes.map((note) => {
+                            filtered.map((note) => {
                                 return (
                                     <li key={note.id}>
                                         <Notes
