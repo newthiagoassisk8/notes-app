@@ -1,14 +1,12 @@
+import { type DataNote } from '@/modules/note/data';
 
-
-
-import { dataNotes, type DataNote } from '@/modules/note/data';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import SimplePagination from '@/components/shared/custom-pagination';
 import { BadgeList } from '@/components/shared/badge-list';
-import { deleteNote, getNotes } from './integrations/api';
+import { deleteNote } from './integrations/api';
 import { Input } from './components/ui/input';
-import { useQuery } from '@tanstack/react-query';
 import { Notes } from './components/shared/notes-query';
+import { useNotes } from '@/hooks/useNotesFetching';
 
 //  TODO:  Em uma aplicação React com react-router-dom, a tela principal deve carregar seus dados apenas uma vez. Quando o usuário sai dessa tela e depois retorna por outro fluxo de navegação, o estado/dados da tela devem continuar os mesmos, sem novo carregamento nem perda de alterações locais.
 // TODO aplicar filtro com paginação no scroll
@@ -16,43 +14,22 @@ import { Notes } from './components/shared/notes-query';
 type TagItem = {
     tags: string[];
 };
-
-
 export function App() {
     const [page, setPage] = useState<number>(1);
 
-    const { data: allInfo, isFetching, isSuccess } = useQuery({
-        queryKey: ['notes', page],
-        queryFn: () => getNotes({ page: page }),
+    // TODO: Passar os dados do reactQUery para esse hook
+    const notesAsdf = useNotes({ page: page })
 
-    });
-
-    useEffect(() => {
-        if (isSuccess && allInfo) {
-
-            localStorage.setItem('notes', JSON.stringify(allInfo))
-        }
-
-
-    }, [isSuccess, allInfo])
-
-    //  console.log(typeof allInfo)
-
-    //    console.log("data " + JSON.stringify(allInfo))
-    //    console.log(typeof allInfo)
-    const [notes, setNotes] = useState<DataNote[]>([allInfo?.data]);
     const [error, setError] = useState<string>('');
     const [totalPages, setTotalPages] = useState(2);
     const [search, setSearch] = useState<string>('');
     const [totalTags, setTotalTags] = useState<TagItem[]>([]);
 
-    const filtered = notes.filter(
+    const filtered = (notesAsdf?.notes ?? []).filter(
         (note: DataNote) =>
             note?.title.toLowerCase().includes(search.toLowerCase()) ||
             note?.content?.toLowerCase().includes(search.toLowerCase())
     );
-
-
 
     const uniqueTags = useMemo(() => {
         if (!totalTags) return [];
@@ -61,48 +38,31 @@ export function App() {
     }, [totalTags]);
 
     const asdfUniqueTags = [
-        "auto",
-        "financeiro",
-        "tecnologia",
-        "dever",
-        "hobbies",
-        "estudos",
-        "tecnologia",
-        "estudos",
-        "estudos",
-        "tecnologia",
-        "tecnologia",
-        "tecnologia"
-    ]
+        'auto',
+        'financeiro',
+        'tecnologia',
+        'dever',
+        'hobbies',
+        'estudos',
+        'tecnologia',
+        'estudos',
+        'estudos',
+        'tecnologia',
+        'tecnologia',
+        'tecnologia',
+    ];
 
     const removeNote = async (id: string) => {
         try {
-            const updatedNotes = notes.filter((note) => note.id !== id);
+            const updatedNotes = (notesAsdf?.notes ?? []).filter((note) => note.id !== id);
             await deleteNote(id);
-            setNotes(updatedNotes);
+            //setNotes(updatedNotes);
         } catch (error) {
             setError((error as Error)?.message);
         } finally {
         }
     };
 
-
-    const applyFilter = async (tagValor: string) => {
-        try {
-
-            const result = await getNotes({ items: 10, page: 1, tag: tagValor });
-            const data = result?.data || [];
-            let { totalPages } = result?.meta || {};
-            totalPages = !isNaN(Number(totalPages)) ? Number(totalPages) : null;
-            setTotalPages(totalPages);
-
-            setNotes(data);
-            setError('');
-        } catch (error) {
-            setError((error as Error)?.message);
-        } finally {
-        }
-    };
 
     return (
         <div className="flex justify-center">
@@ -116,14 +76,13 @@ export function App() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
-                <BadgeList tags={asdfUniqueTags} onTagClick={(tag) => applyFilter(tag)}></BadgeList>
+                <BadgeList tags={asdfUniqueTags} onTagClick={(tag) => notesAsdf.applyFilter(tag)}></BadgeList>
+
                 <section>
                     <ul className="space-y-2">
-
-                        {isFetching ? (
+                        {notesAsdf.isLoading ? (
                             <p>Carregando notas</p>
-
-                        ) : notes.length === 0 ? (
+                        ) : (notesAsdf?.notes ?? []).length === 0 ? (
                             <p>Sem notas</p>
                         ) : (
                             filtered.map((note: DataNote) => {
@@ -139,16 +98,14 @@ export function App() {
                                             createdDate={note.createdDate}
                                         />
                                     </li>
-
-
                                 );
                             })
                         )}
                     </ul>
-
                 </section>
             </div>
         </div>
     );
 }
+
 
