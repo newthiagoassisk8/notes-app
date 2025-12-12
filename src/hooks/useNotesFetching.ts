@@ -1,42 +1,36 @@
-
-import { useEffect, useState } from 'react'
-import { type DataNote } from '@/modules/note/data'
-import { getNotes } from '@/integrations/api'
+import { useEffect, useState } from 'react';
+import { type DataNote } from '@/modules/note/data';
+import { getNotes } from '@/integrations/api';
 
 /**
  * Parâmetros de entrada do hook
  */
 interface UseNotesParams {
-    items?: number
-    page: number
-    tag?: string
+    items?: number;
+    page: number;
+    tag?: string;
 }
 
 /**
  * Retorno do hook
  */
 export interface UseNotesReturn {
-    isChecking: boolean
-    notes: DataNote[] | null | undefined
-    error: string | null
-    isLoading: boolean
-    applyFilter: (tag: string) => void
-
+    isChecking: boolean;
+    notes: DataNote[] | null | undefined;
+    error: string | null;
+    isLoading: boolean;
+    applyFilter: (tag: string) => void;
 }
 
 /**
  * Hook para verificar elegibilidade do cliente para Pagaleve
  *
  */
-export function useNotes({
-    items = 10,
-    page = 1,
-    tag,
-}: UseNotesParams): UseNotesReturn {
+export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNotesReturn {
     const [notes, setNotes] = useState<DataNote[]>();
-    const [isChecking, setIsChecking] = useState(false)
+    const [isChecking, setIsChecking] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(2);
 
     /**
@@ -45,13 +39,12 @@ export function useNotes({
     const fetchNotes = async (): Promise<void> => {
         // Validação dos dados obrigatórios
         if (!page) {
-            setIsChecking(false)
-            return
+            setIsChecking(false);
+            return;
         }
 
-
-        setIsChecking(true)
-        setError(null)
+        setIsChecking(true);
+        setError(null);
 
         try {
             setIsLoading(true);
@@ -59,19 +52,16 @@ export function useNotes({
 
             const data = result?.data || [];
             setNotes(data);
-
-
         } catch (err: any) {
-            setError(err?.message ?? 'Erro ao verificar elegibilidade')
-            console.error('Erro ao verificar elegibilidade Pagaleve:', err)
+            setError(err?.message ?? 'Erro ao verificar elegibilidade');
+            console.error('Erro ao verificar elegibilidade Pagaleve:', err);
         } finally {
-            setIsChecking(false)
-            setIsLoading(false)
+            setIsChecking(false);
+            setIsLoading(false);
         }
-    }
+    };
 
     const applyFilter = async (tag: string) => {
-
         try {
             const result = await getNotes({ items: 10, page: 1, tag: tag });
             const data = result?.data || [];
@@ -85,7 +75,7 @@ export function useNotes({
             setError((error as Error)?.message);
         } finally {
         }
-    }
+    };
 
     /**
      * Efeito para disparar a verificação automática (com debounce)
@@ -93,20 +83,18 @@ export function useNotes({
     useEffect(() => {
         if (page) {
             const timer = setTimeout(() => {
-                fetchNotes()
-            }, 500)
+                fetchNotes();
+            }, 500);
 
-            return () => clearTimeout(timer)
+            return () => clearTimeout(timer);
         }
-    }, [page])
+    }, [page]);
 
     return {
         isChecking,
         notes,
         error,
         isLoading,
-        applyFilter
-    }
+        applyFilter,
+    };
 }
-
-
