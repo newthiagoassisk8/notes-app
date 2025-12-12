@@ -18,10 +18,9 @@ export function App() {
     const [page, setPage] = useState<number>(1);
 
     // TODO: Passar os dados do reactQUery para esse hook
-    const notesAsdf = useNotes({ page: page })
+    const notesAsdf = useNotes({ page: page });
 
     const [error, setError] = useState<string>('');
-    const [totalPages, setTotalPages] = useState(2);
     const [search, setSearch] = useState<string>('');
     const [totalTags, setTotalTags] = useState<TagItem[]>([]);
 
@@ -63,13 +62,12 @@ export function App() {
         }
     };
 
-
     return (
         <div className="flex justify-center">
             <div className="w-full max-w-xl space-y-10 bg-white p-10">
                 <h1 className="text-3xl font-bold">Notes App</h1>
                 <h6 className="my-5 text-lg font-bold text-orange-500">{error}</h6>
-                <SimplePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                <SimplePagination currentPage={page} totalPages={notesAsdf.totalPages} onPageChange={setPage} />
                 <Input
                     type="text"
                     placeholder="Buscar a nota..."
@@ -107,5 +105,3 @@ export function App() {
         </div>
     );
 }
-
-

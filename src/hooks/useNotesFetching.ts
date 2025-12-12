@@ -20,6 +20,7 @@ export interface UseNotesReturn {
     error: string | null;
     isLoading: boolean;
     applyFilter: (tag: string) => void;
+    totalPages: number;
 }
 
 /**
@@ -48,7 +49,7 @@ export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNote
 
         try {
             setIsLoading(true);
-            const result = await getNotes({ items: 10, page: 1, tag: tag });
+            const result = await getNotes({ items: 10, page: page, tag: tag });
 
             const data = result?.data || [];
             setNotes(data);
@@ -96,5 +97,6 @@ export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNote
         error,
         isLoading,
         applyFilter,
+        totalPages
     };
 }
