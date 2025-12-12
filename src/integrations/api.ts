@@ -1,6 +1,14 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export async function getNotes(items = 3, page = 1, tag?: string) {
+export async function getNotes({
+    items = 10,
+    page = 1,
+    tag,
+}: {
+    items?: number;
+    page?: number;
+    tag?: string;
+}) {
     const baseUrl = `${API_URL}/notes`;
     const params = new URLSearchParams({
         limit: items.toString(),
@@ -8,6 +16,29 @@ export async function getNotes(items = 3, page = 1, tag?: string) {
     });
 
     if (tag) params.append('tag', tag);
+
+    try {
+        const res = await fetch(`${baseUrl}?${params.toString()}`);
+
+        if (!res.ok) {
+            throw new Error(`Response status: ${res.status}`);
+        }
+
+        const data = (await res.json()) || {};
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function getTags(items = 3) {
+    const baseUrl = `${API_URL}/notes`;
+    const params = new URLSearchParams({
+        limit: items.toString(),
+        page: '1',
+    });
 
     try {
         const res = await fetch(`${baseUrl}?${params.toString()}`);
