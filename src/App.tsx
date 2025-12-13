@@ -11,9 +11,6 @@ import { useNotes } from '@/hooks/useNotesFetching';
 //  TODO:  Em uma aplicação React com react-router-dom, a tela principal deve carregar seus dados apenas uma vez. Quando o usuário sai dessa tela e depois retorna por outro fluxo de navegação, o estado/dados da tela devem continuar os mesmos, sem novo carregamento nem perda de alterações locais.
 // TODO aplicar filtro com paginação no scroll
 
-type TagItem = {
-    tags: string[];
-};
 export function App() {
     const [page, setPage] = useState<number>(1);
 
@@ -22,7 +19,6 @@ export function App() {
 
     const [error, setError] = useState<string>('');
     const [search, setSearch] = useState<string>('');
-    const [totalTags, setTotalTags] = useState<TagItem[]>([]);
 
     const filtered = (notesAsdf?.notes ?? []).filter(
         (note: DataNote) =>
@@ -31,25 +27,11 @@ export function App() {
     );
 
     const uniqueTags = useMemo(() => {
-        if (!totalTags) return [];
-        const allTags = totalTags.flatMap((item) => item.tags ?? []);
+        if (!notesAsdf.totalTags) return [];
+        const allTags = notesAsdf.totalTags.flatMap((item) => item.tags ?? []);
         return Array.from(new Set(allTags));
-    }, [totalTags]);
+    }, [notesAsdf.totalTags]);
 
-    const asdfUniqueTags = [
-        'auto',
-        'financeiro',
-        'tecnologia',
-        'dever',
-        'hobbies',
-        'estudos',
-        'tecnologia',
-        'estudos',
-        'estudos',
-        'tecnologia',
-        'tecnologia',
-        'tecnologia',
-    ];
 
     const removeNote = async (id: string) => {
         try {
@@ -74,7 +56,7 @@ export function App() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
-                <BadgeList tags={asdfUniqueTags} onTagClick={(tag) => notesAsdf.applyFilter(tag)}></BadgeList>
+                <BadgeList tags={uniqueTags} onTagClick={(tag) => notesAsdf.applyFilter(tag)}></BadgeList>
 
                 <section>
                     <ul className="space-y-2">

@@ -21,8 +21,12 @@ export interface UseNotesReturn {
     isLoading: boolean;
     applyFilter: (tag: string) => void;
     totalPages: number;
+    totalTags: TagItem[];
 }
 
+type TagItem = {
+    tags: string[];
+};
 /**
  * Hook para verificar elegibilidade do cliente para Pagaleve
  *
@@ -30,6 +34,7 @@ export interface UseNotesReturn {
 export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNotesReturn {
     const [notes, setNotes] = useState<DataNote[]>();
     const [isChecking, setIsChecking] = useState(false);
+    const [totalTags, setTotalTags] = useState<TagItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(2);
@@ -51,7 +56,13 @@ export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNote
             setIsLoading(true);
             const result = await getNotes({ items: 10, page: page, tag: tag });
 
+
             const data = result?.data || [];
+            setTotalTags(
+                data.map(({ tags = [] }) => {
+                    return { tags };
+                })
+            );
             setNotes(data);
         } catch (err: any) {
             setError(err?.message ?? 'Erro ao verificar elegibilidade');
@@ -97,6 +108,7 @@ export function useNotes({ items = 10, page = 1, tag }: UseNotesParams): UseNote
         error,
         isLoading,
         applyFilter,
-        totalPages
+        totalPages,
+        totalTags
     };
 }
